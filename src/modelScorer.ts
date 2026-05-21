@@ -117,7 +117,7 @@ export function riskBand(probability: number): RiskBand {
 }
 
 export function formatPercent(value: number): string {
-  return `${Math.round(value * 100)}%`;
+  return `${(value * 100).toFixed(1)}%`;
 }
 
 export function scoreCustomer(row: CustomerInput): ScoredCustomer {

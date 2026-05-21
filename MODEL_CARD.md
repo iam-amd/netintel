@@ -3,7 +3,7 @@
 ## Purpose
 
 NetIntel estimates whether a synthetic ISP customer profile may be at risk of
-churn. It is designed as a portfolio demo and learning project.
+churn. It is designed as a learning project for ISP customer-retention workflows.
 
 ## Data
 
@@ -33,7 +33,7 @@ Reasons for this choice:
 - explainable coefficients
 - easy to export to JSON
 - small enough to score in the browser
-- good fit for a student portfolio demo
+- good fit for a clear student ML project
 
 Numeric features are standardized. Categorical features are one-hot encoded. The
 React app reproduces the same transformation using `model/model_artifact.json`.
@@ -42,7 +42,7 @@ React app reproduces the same transformation using `model/model_artifact.json`.
 
 Good use:
 
-- portfolio demonstration
+- learning and demonstration
 - learning ML + product integration
 - showing how churn scoring could fit an ISP dashboard
 

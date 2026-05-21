@@ -1,45 +1,63 @@
 # NetIntel
 
-NetIntel is a clean portfolio demo for ISP customer churn-risk scoring.
+NetIntel is a small ISP customer-retention tool. It helps an operator find
+customers who may need attention before they disconnect or move to another
+provider.
 
-It uses Python to generate realistic synthetic telecom data and train an
-explainable churn model. The trained model is exported as JSON, then a React
-app scores customers directly in the browser. That keeps the live demo simple:
-no Python server is needed on Vercel.
+The idea is simple: an ISP already sees warning signs every day. Complaints,
+late payments, outages, weak fiber signal, and no recent contact all tell a
+story. NetIntel turns those signals into a clear risk score and a next action.
 
-> This project does not contain real Rico Net customer data. All records are
-> synthetic and made for demo use.
+> This public project uses synthetic data only. It does not contain real Rico
+> Net customer names, phone numbers, addresses, MAC addresses, billing data, or
+> OLT records.
 
-## Why I Built It
+## Why This Is Useful
 
-While building Rico Net, I noticed that ISP software should not only store
-customers, tickets, and network data. It should also help operators decide which
-customers need attention before they leave.
+Small ISPs usually work reactively:
 
-NetIntel is a small first version of that idea: a retention-support dashboard
-that turns ISP signals into a practical churn-risk score.
+- customer complains
+- technician checks the issue
+- payment reminder is sent late
+- customer leaves before anyone notices the pattern
 
-## Live Demo
+NetIntel shows how a simple decision-support system can help the team act
+earlier:
 
-Add the Vercel URL after deployment:
+- call high-risk customers
+- check weak-signal customers
+- follow up on late payments
+- prioritize support work
+- review customer lists instead of guessing
 
-```text
-https://netintel.vercel.app
-```
+## What The App Does
 
-## What It Does
+- Score one customer with simple sliders
+- Explain the top reasons behind the score
+- Suggest a practical operator action
+- Upload a CSV and score many customers at once
+- Show average risk, high-risk count, risk by plan, and risk by customer type
+- Run fully on Vercel as a static React app
 
-- Scores one customer manually using an explainable churn model
-- Lets users upload a CSV and score their own customer dataset
-- Shows high-risk customers, average risk, and risk by plan/area
-- Gives simple operator actions like retention call, payment follow-up, or line-quality check
-- Runs fully in the browser using a model artifact exported from Python
+## How It Works
+
+1. `generate_dataset.py` creates realistic synthetic ISP customer records.
+2. `train_model.py` trains a Logistic Regression model in Python.
+3. The model is exported to `model/model_artifact.json`.
+4. The React app reads that JSON and calculates churn risk in the browser.
+
+No Python server is needed after deployment.
 
 ## Tech Stack
 
-- Python, Pandas, NumPy, scikit-learn
-- React, TypeScript, Vite
-- Vercel-ready static deployment
+- Python
+- Pandas
+- NumPy
+- scikit-learn
+- React
+- TypeScript
+- Vite
+- Vercel
 
 ## Project Structure
 
@@ -72,7 +90,7 @@ Install frontend dependencies:
 npm install
 ```
 
-Create the demo dataset and model artifact:
+Generate data and train the model:
 
 ```bash
 pip install -r requirements.txt
@@ -86,28 +104,17 @@ Start the app:
 npm run dev
 ```
 
-## Train the Model
+Build for production:
 
-The model is intentionally simple: Logistic Regression with standardized numeric
-features and one-hot encoded categories.
-
-Why Logistic Regression?
-
-- Easy to explain in interviews
-- Easy to export to JSON
-- Works well for a clean tabular demo
-- Lets the React app score customers without a backend
-
-The training script exports:
-
-```text
-model/model_artifact.json
-model/model_metrics.json
+```bash
+npm run build
 ```
 
-## Dataset Format
+## CSV Upload Format
 
-The CSV upload expects these columns:
+Use `data/customers.csv` as the sample file.
+
+Required columns:
 
 ```text
 customer_id
@@ -129,13 +136,48 @@ auto_pay
 referrals_brought
 ```
 
-Use `data/customers.csv` as a sample file.
+Example row:
 
-## Deploy to Vercel
+```csv
+customer_id,plan_type,area_type,region,monthly_revenue_inr,tenure_months,data_usage_gb,support_tickets_30d,late_payments_6m,payment_delay_days,days_since_last_contact,outages_30d,avg_rx_power_dbm,plan_change_count,has_fiber,auto_pay,referrals_brought
+DEMO-CUST-00001,Standard_100Mbps,Residential,South,799,18,210,1,0,0,35,0,-20.4,1,1,1,2
+```
+
+Field meaning:
+
+| Column | Meaning |
+|---|---|
+| `support_tickets_30d` | Complaints or tickets in the last 30 days |
+| `late_payments_6m` | Number of delayed payments in the last 6 months |
+| `payment_delay_days` | Average delay after due date |
+| `days_since_last_contact` | Days since the ISP last contacted the customer |
+| `outages_30d` | Service interruptions in the last 30 days |
+| `avg_rx_power_dbm` | Average fiber signal level; below `-27 dBm` is weak |
+| `auto_pay` | `1` if enabled, `0` if not |
+| `has_fiber` | `1` for fiber connection, `0` otherwise |
+
+## Model Notes
+
+The model is Logistic Regression. I chose it because it is easy to explain,
+small enough to export as JSON, and suitable for a clear student project.
+
+Current generated-data metrics:
+
+```text
+Precision: 0.559
+Recall:    0.818
+F1:        0.664
+ROC-AUC:   0.894
+```
+
+This is not a claim of real production accuracy. The metrics only describe the
+synthetic dataset in this repo.
+
+## Deploy To Vercel
 
 1. Push this repository to GitHub.
-2. Import the repo in Vercel.
-3. Use these settings:
+2. Import it in Vercel.
+3. Use:
 
 ```text
 Framework Preset: Vite
@@ -143,25 +185,23 @@ Build Command: npm run build
 Output Directory: dist
 ```
 
-The model files are already static JSON files, so Vercel does not need Python.
+## What I Learned
+
+- A useful ML project does not need to be complicated.
+- A simple model is easier to explain in interviews.
+- UI matters: operators need clear actions, not just a probability.
+- Deployment matters: exporting the model to JSON makes the app easy to host.
+- Synthetic data is useful for public demos when real customer data must stay private.
 
 ## Limitations
 
-- The data is synthetic.
-- This is a decision-support demo, not a production AI system.
-- The model is not validated on real customer outcomes.
-- Before real use, it would need anonymized production data, privacy review,
-  retraining, drift checks, and operator feedback.
-
-## What I Learned
-
-- A small explainable model can be more useful than a complicated black box.
-- Product clarity matters as much as model accuracy.
-- Deployment constraints change architecture decisions.
-- A portfolio project becomes stronger when it is honest about its limits.
+- The dataset is synthetic.
+- The app is decision-support, not an automated decision system.
+- A real version would need anonymized production data, privacy review, and retraining.
 
 ## Author
 
 Bagrudeen Ali Ahamed
 
-Built as a public-safe ML demo inspired by my Rico Net ISP management project.
+Built as a public-safe ML demo inspired by real ISP operations and the Rico Net
+management platform.

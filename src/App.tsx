@@ -1,5 +1,4 @@
-import { Activity, AlertTriangle, BarChart3, FileUp, Radar, ShieldCheck, Upload } from "lucide-react";
-import type { ChangeEvent } from "react";
+import { Activity, AlertTriangle, BarChart3, FileUp, Radio, ShieldCheck, Upload } from "lucide-react";
 import { useMemo, useState } from "react";
 import { parseAndScoreCsv } from "./csv";
 import {
@@ -12,7 +11,7 @@ import {
 } from "./modelScorer";
 
 const presets: Record<string, CustomerInput> = {
-  "Healthy customer": {
+  "Stable customer": {
     customer_id: "DEMO-CUST-0104",
     plan_type: "Standard_100Mbps",
     area_type: "Residential",
@@ -31,7 +30,7 @@ const presets: Record<string, CustomerInput> = {
     auto_pay: 1,
     referrals_brought: 2,
   },
-  "Payment risk": {
+  "Payment follow-up": {
     customer_id: "DEMO-CUST-0742",
     plan_type: "Basic_50Mbps",
     area_type: "Apartment",
@@ -50,7 +49,7 @@ const presets: Record<string, CustomerInput> = {
     auto_pay: 0,
     referrals_brought: 0,
   },
-  "Network quality risk": {
+  "Line quality issue": {
     customer_id: "DEMO-CUST-1188",
     plan_type: "Premium_200Mbps",
     area_type: "PG",
@@ -71,24 +70,106 @@ const presets: Record<string, CustomerInput> = {
   },
 };
 
-function numberValue(value: number, update: (value: number) => void, min = 0, max = 9999) {
-  return {
-    value,
-    min,
-    max,
-    onChange: (event: ChangeEvent<HTMLInputElement>) => update(Number(event.target.value)),
-  };
+const csvColumns = [
+  "customer_id",
+  "plan_type",
+  "area_type",
+  "monthly_revenue_inr",
+  "tenure_months",
+  "support_tickets_30d",
+  "late_payments_6m",
+  "outages_30d",
+  "avg_rx_power_dbm",
+  "auto_pay",
+];
+
+function cleanText(value: string) {
+  return value.replace(/_/g, " ");
+}
+
+function RiskPill({ band }: { band: ScoredCustomer["band"] }) {
+  return <span className={`risk-pill ${band.toLowerCase()}`}>{band}</span>;
+}
+
+function ChoiceGroup({
+  label,
+  value,
+  options,
+  onChange,
+}: {
+  label: string;
+  value: string;
+  options: string[];
+  onChange: (value: string) => void;
+}) {
+  return (
+    <div className="field-block">
+      <span className="field-label">{label}</span>
+      <div className="chip-row">
+        {options.map((option) => (
+          <button
+            className={value === option ? "chip active" : "chip"}
+            key={option}
+            onClick={() => onChange(option)}
+            type="button"
+          >
+            {cleanText(option)}
+          </button>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+function Slider({
+  label,
+  helper,
+  value,
+  min,
+  max,
+  step = 1,
+  suffix = "",
+  onChange,
+}: {
+  label: string;
+  helper: string;
+  value: number;
+  min: number;
+  max: number;
+  step?: number;
+  suffix?: string;
+  onChange: (value: number) => void;
+}) {
+  return (
+    <label className="slider-field">
+      <span className="slider-head">
+        <span>
+          <strong>{label}</strong>
+          <small>{helper}</small>
+        </span>
+        <b>{value}{suffix}</b>
+      </span>
+      <input
+        max={max}
+        min={min}
+        onChange={(event) => onChange(Number(event.target.value))}
+        step={step}
+        type="range"
+        value={value}
+      />
+    </label>
+  );
 }
 
 function BarList({ rows }: { rows: { name: string; value: number; count: number }[] }) {
-  if (rows.length === 0) return <p className="muted">Upload or score customers to see this chart.</p>;
+  if (rows.length === 0) return <p className="muted">Upload customers to see this chart.</p>;
 
   return (
     <div className="bar-list">
       {rows.map((row) => (
         <div className="bar-row" key={row.name}>
           <div className="bar-label">
-            <span>{row.name}</span>
+            <span>{cleanText(row.name)}</span>
             <span>{formatPercent(row.value)} · {row.count}</span>
           </div>
           <div className="bar-track">
@@ -100,16 +181,12 @@ function BarList({ rows }: { rows: { name: string; value: number; count: number 
   );
 }
 
-function RiskPill({ band }: { band: ScoredCustomer["band"] }) {
-  return <span className={`risk-pill ${band.toLowerCase()}`}>{band}</span>;
-}
-
 export default function App() {
-  const [form, setForm] = useState<CustomerInput>(presets["Healthy customer"]);
-  const [manualScore, setManualScore] = useState<ScoredCustomer>(() => scoreCustomer(presets["Healthy customer"]));
+  const [form, setForm] = useState<CustomerInput>(presets["Stable customer"]);
   const [batchRows, setBatchRows] = useState<ScoredCustomer[]>([]);
   const [csvErrors, setCsvErrors] = useState<string[]>([]);
 
+  const manualScore = useMemo(() => scoreCustomer(form), [form]);
   const allRows = batchRows.length > 0 ? batchRows : [manualScore];
   const highRisk = allRows.filter((row) => row.band === "High").length;
   const averageRisk = allRows.reduce((sum, row) => sum + row.probability, 0) / allRows.length;
@@ -122,9 +199,7 @@ export default function App() {
   }
 
   function loadPreset(name: string) {
-    const next = presets[name];
-    setForm(next);
-    setManualScore(scoreCustomer(next));
+    setForm(presets[name]);
   }
 
   async function handleFile(file: File | null) {
@@ -139,37 +214,27 @@ export default function App() {
     <main>
       <section className="hero">
         <div className="hero-copy">
-          <div className="eyebrow"><Radar size={16} /> NetIntel</div>
-          <h1>ISP churn risk scoring, built as a clean portfolio demo.</h1>
+          <div className="eyebrow"><Radio size={16} /> NetIntel</div>
+          <h1>Find ISP customers who need attention before they disconnect.</h1>
           <p>
-            Python trains an explainable model on synthetic telecom data. React scores customers in the browser, so the demo deploys cleanly on Vercel.
+            NetIntel turns everyday ISP signals like complaints, payment delay, outages, and fiber signal quality into a clear retention priority list.
           </p>
         </div>
         <div className="hero-panel">
-          <div>
-            <span className="panel-label">Model</span>
-            <strong>{modelArtifact.metrics.model ?? "Logistic Regression"}</strong>
-          </div>
-          <div>
-            <span className="panel-label">Demo rows</span>
-            <strong>{modelArtifact.metrics.dataset_rows.toLocaleString()}</strong>
-          </div>
-          <div>
-            <span className="panel-label">ROC-AUC</span>
-            <strong>{modelArtifact.metrics.roc_auc.toFixed(3)}</strong>
-          </div>
+          <h2>Why this helps</h2>
+          <p>Small ISPs usually react after a customer complains or leaves. This tool helps the operator decide who needs a call, payment reminder, or line check first.</p>
         </div>
       </section>
 
       <section className="metrics-grid">
         <div className="metric-card">
           <Activity size={18} />
-          <span>Rows scored</span>
+          <span>Customers checked</span>
           <strong>{allRows.length}</strong>
         </div>
         <div className="metric-card">
           <AlertTriangle size={18} />
-          <span>High risk</span>
+          <span>Need attention</span>
           <strong>{highRisk}</strong>
         </div>
         <div className="metric-card">
@@ -179,8 +244,8 @@ export default function App() {
         </div>
         <div className="metric-card">
           <ShieldCheck size={18} />
-          <span>Data type</span>
-          <strong>Synthetic</strong>
+          <span>Demo data</span>
+          <strong>{modelArtifact.metrics.dataset_rows.toLocaleString()} rows</strong>
         </div>
       </section>
 
@@ -188,102 +253,57 @@ export default function App() {
         <div className="panel form-panel">
           <div className="section-title">
             <div>
-              <h2>Score one customer</h2>
-              <p>Use a preset or enter a profile manually.</p>
+              <h2>Try a customer situation</h2>
+              <p>Move the sliders. The result updates instantly.</p>
             </div>
           </div>
 
-          <label>
-            Preset
-            <select onChange={(event) => loadPreset(event.target.value)} defaultValue="Healthy customer">
-              {Object.keys(presets).map((name) => <option key={name}>{name}</option>)}
-            </select>
-          </label>
+          <div className="field-block">
+            <span className="field-label">Quick examples</span>
+            <div className="chip-row">
+              {Object.keys(presets).map((name) => (
+                <button className="chip" key={name} onClick={() => loadPreset(name)} type="button">{name}</button>
+              ))}
+            </div>
+          </div>
 
-          <div className="form-grid">
-            <label>
-              Plan
-              <select value={form.plan_type} onChange={(event) => update("plan_type", event.target.value)}>
-                {modelArtifact.categories.plan_type.map((value) => <option key={value}>{value}</option>)}
-              </select>
-            </label>
-            <label>
-              Area
-              <select value={form.area_type} onChange={(event) => update("area_type", event.target.value)}>
-                {modelArtifact.categories.area_type.map((value) => <option key={value}>{value}</option>)}
-              </select>
-            </label>
-            <label>
-              Region
-              <select value={form.region} onChange={(event) => update("region", event.target.value)}>
-                {modelArtifact.categories.region.map((value) => <option key={value}>{value}</option>)}
-              </select>
-            </label>
-            <label>
-              Monthly revenue
-              <input type="number" {...numberValue(form.monthly_revenue_inr, (value) => update("monthly_revenue_inr", value), 0, 5000)} />
-            </label>
-            <label>
-              Tenure months
-              <input type="number" {...numberValue(form.tenure_months, (value) => update("tenure_months", value), 1, 72)} />
-            </label>
-            <label>
-              Data usage GB
-              <input type="number" {...numberValue(form.data_usage_gb, (value) => update("data_usage_gb", value), 0, 2000)} />
-            </label>
-            <label>
-              Tickets 30d
-              <input type="number" {...numberValue(form.support_tickets_30d, (value) => update("support_tickets_30d", value), 0, 20)} />
-            </label>
-            <label>
-              Late payments 6m
-              <input type="number" {...numberValue(form.late_payments_6m, (value) => update("late_payments_6m", value), 0, 20)} />
-            </label>
-            <label>
-              Payment delay days
-              <input type="number" {...numberValue(form.payment_delay_days, (value) => update("payment_delay_days", value), 0, 60)} />
-            </label>
-            <label>
-              Days since contact
-              <input type="number" {...numberValue(form.days_since_last_contact, (value) => update("days_since_last_contact", value), 0, 365)} />
-            </label>
-            <label>
-              Outages 30d
-              <input type="number" {...numberValue(form.outages_30d, (value) => update("outages_30d", value), 0, 20)} />
-            </label>
-            <label>
-              Rx power dBm
-              <input type="number" step="0.1" {...numberValue(form.avg_rx_power_dbm, (value) => update("avg_rx_power_dbm", value), -40, -5)} />
-            </label>
-            <label>
-              Plan changes
-              <input type="number" {...numberValue(form.plan_change_count, (value) => update("plan_change_count", value), 0, 12)} />
-            </label>
-            <label>
-              Referrals
-              <input type="number" {...numberValue(form.referrals_brought, (value) => update("referrals_brought", value), 0, 20)} />
-            </label>
+          <ChoiceGroup
+            label="Plan"
+            onChange={(value) => update("plan_type", value)}
+            options={modelArtifact.categories.plan_type}
+            value={form.plan_type}
+          />
+          <ChoiceGroup
+            label="Customer type"
+            onChange={(value) => update("area_type", value)}
+            options={modelArtifact.categories.area_type}
+            value={form.area_type}
+          />
+
+          <div className="slider-grid">
+            <Slider label="Monthly bill" helper="What the customer pays" max={3000} min={300} onChange={(value) => update("monthly_revenue_inr", value)} step={50} suffix=" INR" value={form.monthly_revenue_inr} />
+            <Slider label="Time with ISP" helper="Longer tenure usually lowers risk" max={72} min={1} onChange={(value) => update("tenure_months", value)} suffix=" mo" value={form.tenure_months} />
+            <Slider label="Data usage" helper="Approx monthly usage" max={900} min={10} onChange={(value) => update("data_usage_gb", value)} step={10} suffix=" GB" value={form.data_usage_gb} />
+            <Slider label="Complaints" helper="Support tickets in last 30 days" max={10} min={0} onChange={(value) => update("support_tickets_30d", value)} value={form.support_tickets_30d} />
+            <Slider label="Late payments" helper="Missed or delayed payments in 6 months" max={8} min={0} onChange={(value) => update("late_payments_6m", value)} value={form.late_payments_6m} />
+            <Slider label="Payment delay" helper="Average delay after due date" max={45} min={0} onChange={(value) => update("payment_delay_days", value)} suffix=" days" value={form.payment_delay_days} />
+            <Slider label="No-contact days" helper="How long since the team contacted them" max={210} min={1} onChange={(value) => update("days_since_last_contact", value)} suffix=" days" value={form.days_since_last_contact} />
+            <Slider label="Service outages" helper="Recent network interruptions" max={10} min={0} onChange={(value) => update("outages_30d", value)} value={form.outages_30d} />
+            <Slider label="Fiber signal" helper="Lower than -27 dBm is weak" max={-12} min={-35} onChange={(value) => update("avg_rx_power_dbm", value)} step={0.1} suffix=" dBm" value={form.avg_rx_power_dbm} />
+            <Slider label="Referrals" helper="Customers who refer others are usually loyal" max={8} min={0} onChange={(value) => update("referrals_brought", value)} value={form.referrals_brought} />
           </div>
 
           <div className="toggle-row">
             <label><input type="checkbox" checked={Boolean(form.has_fiber)} onChange={(event) => update("has_fiber", event.target.checked ? 1 : 0)} /> Fiber connection</label>
             <label><input type="checkbox" checked={Boolean(form.auto_pay)} onChange={(event) => update("auto_pay", event.target.checked ? 1 : 0)} /> Auto-pay enabled</label>
           </div>
-
-          <button className="primary-button" onClick={() => {
-            const next = scoreCustomer(form);
-            setManualScore(next);
-            if (batchRows.length === 0) setBatchRows([]);
-          }}>
-            Score customer
-          </button>
         </div>
 
         <div className="panel result-panel">
           <div className="section-title">
             <div>
-              <h2>Result</h2>
-              <p>Risk band, top reasons, and a practical next action.</p>
+              <h2>What should the operator do?</h2>
+              <p>Simple output, not a black-box score.</p>
             </div>
             <RiskPill band={manualScore.band} />
           </div>
@@ -291,11 +311,11 @@ export default function App() {
           <div className="progress-track">
             <div className={`progress-fill ${manualScore.band.toLowerCase()}`} style={{ width: `${manualScore.probability * 100}%` }} />
           </div>
-          <h3>Main reasons</h3>
+          <h3>Why this result?</h3>
           <ul className="reason-list">
             {manualScore.reasons.map((reason) => <li key={reason}>{reason}</li>)}
           </ul>
-          <h3>Operator action</h3>
+          <h3>Next action</h3>
           <p className="action-box">{manualScore.action}</p>
         </div>
       </section>
@@ -303,14 +323,21 @@ export default function App() {
       <section className="panel upload-panel">
         <div className="section-title">
           <div>
-            <h2>Upload your own CSV</h2>
-            <p>Use the generated `data/customers.csv` format or your own file with matching columns.</p>
+            <h2>Check a full customer list</h2>
+            <p>Upload a CSV and NetIntel will rank the customers who need attention first.</p>
           </div>
           <FileUp size={22} />
         </div>
+        <div className="csv-help">
+          <strong>CSV format</strong>
+          <p>Use <code>data/customers.csv</code> as the sample. These are the most important columns:</p>
+          <div className="column-list">
+            {csvColumns.map((column) => <code key={column}>{column}</code>)}
+          </div>
+        </div>
         <label className="upload-box">
           <Upload size={22} />
-          <span>Choose CSV file</span>
+          <span>Upload customer CSV</span>
           <input type="file" accept=".csv,text/csv" onChange={(event) => handleFile(event.target.files?.[0] ?? null)} />
         </label>
         {csvErrors.map((error) => <p className="error-text" key={error}>{error}</p>)}
@@ -322,7 +349,7 @@ export default function App() {
           <BarList rows={byPlan} />
         </div>
         <div className="panel">
-          <h2>Risk by area</h2>
+          <h2>Risk by customer type</h2>
           <BarList rows={byArea} />
         </div>
       </section>
@@ -330,8 +357,8 @@ export default function App() {
       <section className="panel table-panel">
         <div className="section-title">
           <div>
-            <h2>Top risky customers</h2>
-            <p>Sorted by predicted churn probability.</p>
+            <h2>Priority list</h2>
+            <p>Highest predicted churn risk first.</p>
           </div>
         </div>
         <div className="table-wrap">
@@ -340,9 +367,9 @@ export default function App() {
               <tr>
                 <th>Customer</th>
                 <th>Plan</th>
-                <th>Area</th>
+                <th>Type</th>
                 <th>Risk</th>
-                <th>Reason</th>
+                <th>Main signal</th>
                 <th>Action</th>
               </tr>
             </thead>
@@ -350,8 +377,8 @@ export default function App() {
               {topRisk.map((row, index) => (
                 <tr key={`${row.customer_id}-${index}`}>
                   <td>{row.customer_id ?? `Customer ${index + 1}`}</td>
-                  <td>{row.plan_type}</td>
-                  <td>{row.area_type}</td>
+                  <td>{cleanText(String(row.plan_type ?? "Unknown"))}</td>
+                  <td>{cleanText(String(row.area_type ?? "Unknown"))}</td>
                   <td><RiskPill band={row.band} /> {formatPercent(row.probability)}</td>
                   <td>{row.reasons[0]}</td>
                   <td>{row.action}</td>
@@ -363,16 +390,15 @@ export default function App() {
       </section>
 
       <section className="panel notes-panel">
-        <h2>Model notes</h2>
+        <h2>How it works</h2>
         <p>
-          NetIntel uses synthetic data and a Logistic Regression model because the goal is a clear portfolio demo, not a black-box production system.
-          The model runs fully in the browser using coefficients exported from Python.
+          The Python script creates realistic synthetic ISP records and trains a Logistic Regression model. The model is exported as JSON, and this React app calculates the score in the browser. No real customer data is used.
         </p>
         <div className="note-grid">
           <span>Precision: {modelArtifact.metrics.precision.toFixed(3)}</span>
           <span>Recall: {modelArtifact.metrics.recall.toFixed(3)}</span>
           <span>F1: {modelArtifact.metrics.f1.toFixed(3)}</span>
-          <span>Churn rate: {formatPercent(modelArtifact.metrics.churn_rate)}</span>
+          <span>ROC-AUC: {modelArtifact.metrics.roc_auc.toFixed(3)}</span>
         </div>
       </section>
     </main>
