@@ -32,11 +32,13 @@ earlier:
 
 ## What The App Does
 
-- Score one customer with simple sliders
+- Search simulated customers by name, username, customer ID, phone, or locality
+- Click a customer and generate a clear risk report
+- Adjust the selected customer with simple sliders
 - Explain the top reasons behind the score
 - Suggest a practical operator action
 - Upload a CSV and score many customers at once
-- Show average risk, high-risk count, risk by plan, and risk by customer type
+- Show average risk, high-risk count, risk by plan, and a priority list
 - Run fully on Vercel as a static React app
 
 ## How It Works
@@ -47,6 +49,28 @@ earlier:
 4. The React app reads that JSON and calculates churn risk in the browser.
 
 No Python server is needed after deployment.
+
+## Demo Dataset
+
+The included `data/customers.csv` contains 2,500 simulated subscribers. The
+names, usernames, phone numbers, and localities are generated only for demo
+usage. They are made to look like an ISP customer list so the dashboard can be
+searched and tested like a real workflow.
+
+Example identity fields:
+
+```text
+customer_id: DEMO-CUST-00024
+username: arun.kumar1023
+first_name: Arun
+last_name: Kumar
+phone: 9000000024
+locality: Orikkai
+```
+
+When you click a customer in the app, NetIntel combines their profile,
+complaints, payment behavior, outage history, and fiber signal into a small
+operator report.
 
 ## Tech Stack
 
@@ -118,6 +142,11 @@ Required columns:
 
 ```text
 customer_id
+username
+first_name
+last_name
+phone
+locality
 plan_type
 area_type
 region
@@ -139,14 +168,15 @@ referrals_brought
 Example row:
 
 ```csv
-customer_id,plan_type,area_type,region,monthly_revenue_inr,tenure_months,data_usage_gb,support_tickets_30d,late_payments_6m,payment_delay_days,days_since_last_contact,outages_30d,avg_rx_power_dbm,plan_change_count,has_fiber,auto_pay,referrals_brought
-DEMO-CUST-00001,Standard_100Mbps,Residential,South,799,18,210,1,0,0,35,0,-20.4,1,1,1,2
+customer_id,username,first_name,last_name,phone,locality,plan_type,area_type,region,monthly_revenue_inr,tenure_months,data_usage_gb,support_tickets_30d,late_payments_6m,payment_delay_days,days_since_last_contact,outages_30d,avg_rx_power_dbm,plan_change_count,has_fiber,auto_pay,referrals_brought
+DEMO-CUST-00001,arun.kumar1000,Arun,Kumar,9000000001,Orikkai,Standard_100Mbps,Residential,South,799,18,210,1,0,0,35,0,-20.4,1,1,1,2
 ```
 
 Field meaning:
 
 | Column | Meaning |
 |---|---|
+| `username`, `first_name`, `last_name`, `phone`, `locality` | Demo identity fields used for searching and report display |
 | `support_tickets_30d` | Complaints or tickets in the last 30 days |
 | `late_payments_6m` | Number of delayed payments in the last 6 months |
 | `payment_delay_days` | Average delay after due date |
@@ -164,9 +194,9 @@ small enough to export as JSON, and suitable for a clear student project.
 Current generated-data metrics:
 
 ```text
-Precision: 0.559
-Recall:    0.818
-F1:        0.664
+Precision: 0.492
+Recall:    0.836
+F1:        0.620
 ROC-AUC:   0.894
 ```
 

@@ -20,6 +20,20 @@ SEED = 17
 ROW_COUNT = 2500
 OUTPUT_PATH = Path("data/customers.csv")
 
+FIRST_NAMES = [
+    "Arun", "Divya", "Karthik", "Meena", "Sanjay", "Priya", "Rahul", "Nisha",
+    "Vignesh", "Asha", "Imran", "Fathima", "Bala", "Keerthi", "Ramesh", "Sneha",
+    "Naveen", "Kavya", "Yusuf", "Harini", "Prakash", "Revathi", "Dinesh", "Swetha",
+]
+LAST_NAMES = [
+    "Kumar", "Ravi", "Srinivasan", "Basha", "Raj", "Ali", "Krishnan", "Devi",
+    "Murugan", "Begum", "Narayanan", "Sekar", "Joseph", "Ganesh", "Mohan", "Ibrahim",
+]
+LOCALITIES = [
+    "Kanchipuram", "Orikkai", "Pillaiyarpalayam", "Sevilimedu", "Enathur",
+    "Walajabad", "Nathapettai", "Big Kanchipuram", "Little Kanchipuram", "Ayyampettai",
+]
+
 
 def sigmoid(values: np.ndarray) -> np.ndarray:
     return 1.0 / (1.0 + np.exp(-values))
@@ -27,6 +41,16 @@ def sigmoid(values: np.ndarray) -> np.ndarray:
 
 def generate_dataset(row_count: int = ROW_COUNT, seed: int = SEED) -> pd.DataFrame:
     rng = np.random.default_rng(seed)
+    row_numbers = np.arange(1, row_count + 1)
+
+    first_name = rng.choice(FIRST_NAMES, size=row_count)
+    last_name = rng.choice(LAST_NAMES, size=row_count)
+    username = np.array([
+        f"{first_name[i].lower()}.{last_name[i].lower()}{1000 + i}"
+        for i in range(row_count)
+    ])
+    phone = np.array([f"90000{number:05d}" for number in row_numbers])
+    locality = rng.choice(LOCALITIES, size=row_count)
 
     plans = np.array(["Basic_50Mbps", "Standard_100Mbps", "Premium_200Mbps", "Business_500Mbps"])
     plan_type = rng.choice(plans, size=row_count, p=[0.42, 0.34, 0.19, 0.05])
@@ -90,7 +114,12 @@ def generate_dataset(row_count: int = ROW_COUNT, seed: int = SEED) -> pd.DataFra
     churned = (rng.random(row_count) < churn_probability).astype(int)
 
     return pd.DataFrame({
-        "customer_id": [f"DEMO-CUST-{i:05d}" for i in range(1, row_count + 1)],
+        "customer_id": [f"DEMO-CUST-{i:05d}" for i in row_numbers],
+        "username": username,
+        "first_name": first_name,
+        "last_name": last_name,
+        "phone": phone,
+        "locality": locality,
         "plan_type": plan_type,
         "area_type": area_type,
         "region": region,

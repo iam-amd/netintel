@@ -73,48 +73,48 @@
   ],
   "numeric_stats": {
     "monthly_revenue_inr": {
-      "mean": 852.05,
-      "scale": 490.58199875250216
+      "mean": 846.7,
+      "scale": 479.5984883212206
     },
     "tenure_months": {
-      "mean": 16.548,
-      "scale": 11.43349010582508
+      "mean": 16.814,
+      "scale": 12.021663944729115
     },
     "data_usage_gb": {
-      "mean": 228.06539999999998,
-      "scale": 137.01383066260138
+      "mean": 226.36575,
+      "scale": 138.75533248108883
     },
     "support_tickets_30d": {
-      "mean": 0.6565,
-      "scale": 0.8145598504714064
+      "mean": 0.6685,
+      "scale": 0.8429755334527806
     },
     "late_payments_6m": {
-      "mean": 0.5955,
-      "scale": 0.7866891063183727
+      "mean": 0.5815,
+      "scale": 0.7901631160716123
     },
     "payment_delay_days": {
-      "mean": 4.493,
-      "scale": 4.127220735555587
+      "mean": 4.5025,
+      "scale": 4.141738010787258
     },
     "days_since_last_contact": {
-      "mean": 105.2365,
-      "scale": 60.952781460323855
+      "mean": 104.3625,
+      "scale": 59.10341862997436
     },
     "outages_30d": {
-      "mean": 0.4,
-      "scale": 0.66332495807108
+      "mean": 0.409,
+      "scale": 0.6600901453589502
     },
     "avg_rx_power_dbm": {
-      "mean": -21.00343,
-      "scale": 2.565673992365359
+      "mean": -21.088865,
+      "scale": 2.528475244445751
     },
     "plan_change_count": {
-      "mean": 0.266,
-      "scale": 0.5101411569359995
+      "mean": 0.247,
+      "scale": 0.4939544513414167
     },
     "referrals_brought": {
-      "mean": 0.415,
-      "scale": 0.6235182435181829
+      "mean": 0.4195,
+      "scale": 0.6599392017451304
     }
   },
   "categories": {
@@ -138,112 +138,112 @@
       "West"
     ]
   },
-  "intercept": 0.15098778595837858,
+  "intercept": 0.1561773978826978,
   "coefficients": {
-    "monthly_revenue_inr": -0.06579770287889947,
-    "tenure_months": -0.417510639838621,
-    "data_usage_gb": -0.20513519071069933,
-    "support_tickets_30d": 0.8253290760698899,
-    "late_payments_6m": 0.8601766133832236,
-    "payment_delay_days": 0.22925599527295756,
-    "days_since_last_contact": 1.3160564547557445,
-    "outages_30d": 0.5979750767258667,
-    "avg_rx_power_dbm": -0.04594510183548261,
-    "plan_change_count": 0.034042102347403735,
-    "referrals_brought": -0.45601135260572584,
-    "plan_type_Basic_50Mbps": -0.1537194427446559,
-    "plan_type_Business_500Mbps": -0.06998904124547306,
-    "plan_type_Premium_200Mbps": 0.09576579936168941,
-    "plan_type_Standard_100Mbps": 0.26548332512966777,
-    "area_type_Apartment": 0.1336445330258092,
-    "area_type_PG": -0.3709793241095554,
-    "area_type_Residential": -0.22022267318860245,
-    "area_type_Small_Business": 0.5950981047735776,
-    "region_Central": 0.012523841208538288,
-    "region_East": 0.0007536559142001389,
-    "region_North": 0.20806481262926385,
-    "region_South": -0.2836591386918408,
-    "region_West": 0.19985746944106744,
-    "has_fiber": -0.8103936056417503,
-    "auto_pay": -1.0288507723545512
+    "monthly_revenue_inr": -0.08382695097007094,
+    "tenure_months": -0.32596499703393994,
+    "data_usage_gb": -0.1945223605092019,
+    "support_tickets_30d": 0.9103115722719648,
+    "late_payments_6m": 0.4103058814860952,
+    "payment_delay_days": 0.499606356647647,
+    "days_since_last_contact": 1.2055341414093583,
+    "outages_30d": 0.47277206553347056,
+    "avg_rx_power_dbm": -0.11685185140966005,
+    "plan_change_count": -0.017224302764419518,
+    "referrals_brought": -0.5325099118944028,
+    "plan_type_Basic_50Mbps": -0.10094407452310782,
+    "plan_type_Business_500Mbps": -0.12007369881593444,
+    "plan_type_Premium_200Mbps": 0.28082357836229443,
+    "plan_type_Standard_100Mbps": 0.08218586199589224,
+    "area_type_Apartment": -0.0252022926673878,
+    "area_type_PG": 0.11619904990844472,
+    "area_type_Residential": -0.0840526107392538,
+    "area_type_Small_Business": 0.13504752051734034,
+    "region_Central": 0.2640861370608015,
+    "region_East": 0.07135804389426374,
+    "region_North": -0.12428670285118329,
+    "region_South": -0.12636291752261397,
+    "region_West": 0.05719710643787661,
+    "has_fiber": -0.702908203665746,
+    "auto_pay": -1.320999003098926
   },
   "top_features": [
     {
-      "feature": "days_since_last_contact",
-      "coefficient": 1.31606,
-      "direction": "raises risk"
-    },
-    {
       "feature": "auto_pay",
-      "coefficient": -1.02885,
+      "coefficient": -1.321,
       "direction": "lowers risk"
     },
     {
-      "feature": "late_payments_6m",
-      "coefficient": 0.86018,
+      "feature": "days_since_last_contact",
+      "coefficient": 1.20553,
       "direction": "raises risk"
     },
     {
       "feature": "support_tickets_30d",
-      "coefficient": 0.82533,
+      "coefficient": 0.91031,
       "direction": "raises risk"
     },
     {
       "feature": "has_fiber",
-      "coefficient": -0.81039,
+      "coefficient": -0.70291,
       "direction": "lowers risk"
-    },
-    {
-      "feature": "outages_30d",
-      "coefficient": 0.59798,
-      "direction": "raises risk"
-    },
-    {
-      "feature": "area_type_Small_Business",
-      "coefficient": 0.5951,
-      "direction": "raises risk"
     },
     {
       "feature": "referrals_brought",
-      "coefficient": -0.45601,
+      "coefficient": -0.53251,
       "direction": "lowers risk"
+    },
+    {
+      "feature": "payment_delay_days",
+      "coefficient": 0.49961,
+      "direction": "raises risk"
+    },
+    {
+      "feature": "outages_30d",
+      "coefficient": 0.47277,
+      "direction": "raises risk"
+    },
+    {
+      "feature": "late_payments_6m",
+      "coefficient": 0.41031,
+      "direction": "raises risk"
     },
     {
       "feature": "tenure_months",
-      "coefficient": -0.41751,
+      "coefficient": -0.32596,
       "direction": "lowers risk"
     },
     {
-      "feature": "area_type_PG",
-      "coefficient": -0.37098,
-      "direction": "lowers risk"
-    },
-    {
-      "feature": "region_South",
-      "coefficient": -0.28366,
-      "direction": "lowers risk"
-    },
-    {
-      "feature": "plan_type_Standard_100Mbps",
-      "coefficient": 0.26548,
+      "feature": "plan_type_Premium_200Mbps",
+      "coefficient": 0.28082,
       "direction": "raises risk"
+    },
+    {
+      "feature": "region_Central",
+      "coefficient": 0.26409,
+      "direction": "raises risk"
+    },
+    {
+      "feature": "data_usage_gb",
+      "coefficient": -0.19452,
+      "direction": "lowers risk"
     }
   ],
   "metrics": {
     "dataset_rows": 2500,
-    "churn_rate": 0.2204,
+    "churn_rate": 0.22,
     "test_size": 500,
     "model": "Logistic Regression",
-    "accuracy": 0.818,
-    "precision": 0.559,
-    "recall": 0.8182,
-    "f1": 0.6642,
-    "roc_auc": 0.8936,
+    "accuracy": 0.774,
+    "precision": 0.492,
+    "recall": 0.8364,
+    "f1": 0.6195,
+    "roc_auc": 0.8938,
     "confusion_matrix": {
-      "tn": 319,
-      "fp": 71,
-      "fn": 20,
-      "tp": 90
+      "tn": 295,
+      "fp": 95,
+      "fn": 18,
+      "tp": 92
     }
   }
 }

@@ -2,6 +2,11 @@ import artifact from "../model/model_artifact.json";
 
 export type CustomerInput = {
   customer_id?: string;
+  username?: string;
+  first_name?: string;
+  last_name?: string;
+  phone?: string;
+  locality?: string;
   plan_type: string;
   area_type: string;
   region: string;
@@ -176,6 +181,11 @@ export function recommendedAction(row: CustomerInput, band: RiskBand): string {
 export function normalizeCustomer(raw: Record<string, string>): CustomerInput {
   return {
     customer_id: raw.customer_id || "Uploaded customer",
+    username: raw.username || "",
+    first_name: raw.first_name || "",
+    last_name: raw.last_name || "",
+    phone: raw.phone || "",
+    locality: raw.locality || "",
     plan_type: raw.plan_type || "Standard_100Mbps",
     area_type: raw.area_type || "Residential",
     region: raw.region || "South",
