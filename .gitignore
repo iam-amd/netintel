@@ -1,0 +1,16 @@
+__pycache__/
+*.pyc
+*.pyo
+.venv/
+venv/
+.env
+.DS_Store
+.ipynb_checkpoints/
+.pytest_cache/
+dist/
+node_modules/
+*.log
+*.err
+*.tsbuildinfo
+vite.config.js
+vite.config.d.ts
