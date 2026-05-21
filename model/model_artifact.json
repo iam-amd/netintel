@@ -1,0 +1,249 @@
+{
+  "project": "NetIntel",
+  "version": "1.0.0",
+  "model_type": "Logistic Regression",
+  "target": "churned",
+  "features": [
+    "monthly_revenue_inr",
+    "tenure_months",
+    "data_usage_gb",
+    "support_tickets_30d",
+    "late_payments_6m",
+    "payment_delay_days",
+    "days_since_last_contact",
+    "outages_30d",
+    "avg_rx_power_dbm",
+    "plan_change_count",
+    "referrals_brought",
+    "plan_type",
+    "area_type",
+    "region",
+    "has_fiber",
+    "auto_pay"
+  ],
+  "numeric_features": [
+    "monthly_revenue_inr",
+    "tenure_months",
+    "data_usage_gb",
+    "support_tickets_30d",
+    "late_payments_6m",
+    "payment_delay_days",
+    "days_since_last_contact",
+    "outages_30d",
+    "avg_rx_power_dbm",
+    "plan_change_count",
+    "referrals_brought"
+  ],
+  "categorical_features": [
+    "plan_type",
+    "area_type",
+    "region"
+  ],
+  "binary_features": [
+    "has_fiber",
+    "auto_pay"
+  ],
+  "transformed_features": [
+    "monthly_revenue_inr",
+    "tenure_months",
+    "data_usage_gb",
+    "support_tickets_30d",
+    "late_payments_6m",
+    "payment_delay_days",
+    "days_since_last_contact",
+    "outages_30d",
+    "avg_rx_power_dbm",
+    "plan_change_count",
+    "referrals_brought",
+    "plan_type_Basic_50Mbps",
+    "plan_type_Business_500Mbps",
+    "plan_type_Premium_200Mbps",
+    "plan_type_Standard_100Mbps",
+    "area_type_Apartment",
+    "area_type_PG",
+    "area_type_Residential",
+    "area_type_Small_Business",
+    "region_Central",
+    "region_East",
+    "region_North",
+    "region_South",
+    "region_West",
+    "has_fiber",
+    "auto_pay"
+  ],
+  "numeric_stats": {
+    "monthly_revenue_inr": {
+      "mean": 852.05,
+      "scale": 490.58199875250216
+    },
+    "tenure_months": {
+      "mean": 16.548,
+      "scale": 11.43349010582508
+    },
+    "data_usage_gb": {
+      "mean": 228.06539999999998,
+      "scale": 137.01383066260138
+    },
+    "support_tickets_30d": {
+      "mean": 0.6565,
+      "scale": 0.8145598504714064
+    },
+    "late_payments_6m": {
+      "mean": 0.5955,
+      "scale": 0.7866891063183727
+    },
+    "payment_delay_days": {
+      "mean": 4.493,
+      "scale": 4.127220735555587
+    },
+    "days_since_last_contact": {
+      "mean": 105.2365,
+      "scale": 60.952781460323855
+    },
+    "outages_30d": {
+      "mean": 0.4,
+      "scale": 0.66332495807108
+    },
+    "avg_rx_power_dbm": {
+      "mean": -21.00343,
+      "scale": 2.565673992365359
+    },
+    "plan_change_count": {
+      "mean": 0.266,
+      "scale": 0.5101411569359995
+    },
+    "referrals_brought": {
+      "mean": 0.415,
+      "scale": 0.6235182435181829
+    }
+  },
+  "categories": {
+    "plan_type": [
+      "Basic_50Mbps",
+      "Business_500Mbps",
+      "Premium_200Mbps",
+      "Standard_100Mbps"
+    ],
+    "area_type": [
+      "Apartment",
+      "PG",
+      "Residential",
+      "Small_Business"
+    ],
+    "region": [
+      "Central",
+      "East",
+      "North",
+      "South",
+      "West"
+    ]
+  },
+  "intercept": 0.15098778595837858,
+  "coefficients": {
+    "monthly_revenue_inr": -0.06579770287889947,
+    "tenure_months": -0.417510639838621,
+    "data_usage_gb": -0.20513519071069933,
+    "support_tickets_30d": 0.8253290760698899,
+    "late_payments_6m": 0.8601766133832236,
+    "payment_delay_days": 0.22925599527295756,
+    "days_since_last_contact": 1.3160564547557445,
+    "outages_30d": 0.5979750767258667,
+    "avg_rx_power_dbm": -0.04594510183548261,
+    "plan_change_count": 0.034042102347403735,
+    "referrals_brought": -0.45601135260572584,
+    "plan_type_Basic_50Mbps": -0.1537194427446559,
+    "plan_type_Business_500Mbps": -0.06998904124547306,
+    "plan_type_Premium_200Mbps": 0.09576579936168941,
+    "plan_type_Standard_100Mbps": 0.26548332512966777,
+    "area_type_Apartment": 0.1336445330258092,
+    "area_type_PG": -0.3709793241095554,
+    "area_type_Residential": -0.22022267318860245,
+    "area_type_Small_Business": 0.5950981047735776,
+    "region_Central": 0.012523841208538288,
+    "region_East": 0.0007536559142001389,
+    "region_North": 0.20806481262926385,
+    "region_South": -0.2836591386918408,
+    "region_West": 0.19985746944106744,
+    "has_fiber": -0.8103936056417503,
+    "auto_pay": -1.0288507723545512
+  },
+  "top_features": [
+    {
+      "feature": "days_since_last_contact",
+      "coefficient": 1.31606,
+      "direction": "raises risk"
+    },
+    {
+      "feature": "auto_pay",
+      "coefficient": -1.02885,
+      "direction": "lowers risk"
+    },
+    {
+      "feature": "late_payments_6m",
+      "coefficient": 0.86018,
+      "direction": "raises risk"
+    },
+    {
+      "feature": "support_tickets_30d",
+      "coefficient": 0.82533,
+      "direction": "raises risk"
+    },
+    {
+      "feature": "has_fiber",
+      "coefficient": -0.81039,
+      "direction": "lowers risk"
+    },
+    {
+      "feature": "outages_30d",
+      "coefficient": 0.59798,
+      "direction": "raises risk"
+    },
+    {
+      "feature": "area_type_Small_Business",
+      "coefficient": 0.5951,
+      "direction": "raises risk"
+    },
+    {
+      "feature": "referrals_brought",
+      "coefficient": -0.45601,
+      "direction": "lowers risk"
+    },
+    {
+      "feature": "tenure_months",
+      "coefficient": -0.41751,
+      "direction": "lowers risk"
+    },
+    {
+      "feature": "area_type_PG",
+      "coefficient": -0.37098,
+      "direction": "lowers risk"
+    },
+    {
+      "feature": "region_South",
+      "coefficient": -0.28366,
+      "direction": "lowers risk"
+    },
+    {
+      "feature": "plan_type_Standard_100Mbps",
+      "coefficient": 0.26548,
+      "direction": "raises risk"
+    }
+  ],
+  "metrics": {
+    "dataset_rows": 2500,
+    "churn_rate": 0.2204,
+    "test_size": 500,
+    "model": "Logistic Regression",
+    "accuracy": 0.818,
+    "precision": 0.559,
+    "recall": 0.8182,
+    "f1": 0.6642,
+    "roc_auc": 0.8936,
+    "confusion_matrix": {
+      "tn": 319,
+      "fp": 71,
+      "fn": 20,
+      "tp": 90
+    }
+  }
+}
