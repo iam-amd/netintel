@@ -39,6 +39,7 @@ earlier:
 - Suggest a practical operator action
 - Upload a CSV and score many customers at once
 - Show average risk, high-risk count, risk by plan, and a priority list
+- Light and dark theme, with the choice remembered between visits
 - Run fully on Vercel as a static React app
 
 ## How It Works

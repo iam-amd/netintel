@@ -55,7 +55,7 @@ type ModelArtifact = {
   top_features: { feature: string; coefficient: number; direction: string }[];
 };
 
-export const modelArtifact = artifact as ModelArtifact;
+const modelArtifact = artifact as ModelArtifact;
 
 export const requiredColumns = [
   "customer_id",
@@ -115,14 +115,10 @@ function transformedFeatures(row: CustomerInput): Record<string, number> {
   return output;
 }
 
-export function riskBand(probability: number): RiskBand {
+function riskBand(probability: number): RiskBand {
   if (probability >= 0.7) return "High";
   if (probability >= 0.4) return "Medium";
   return "Low";
-}
-
-export function formatPercent(value: number): string {
-  return `${(value * 100).toFixed(1)}%`;
 }
 
 export function scoreCustomer(row: CustomerInput): ScoredCustomer {
@@ -203,19 +199,4 @@ export function normalizeCustomer(raw: Record<string, string>): CustomerInput {
     auto_pay: toNumber(raw.auto_pay, 0),
     referrals_brought: toNumber(raw.referrals_brought, 0),
   };
-}
-
-export function groupAverage(rows: ScoredCustomer[], key: keyof CustomerInput): { name: string; value: number; count: number }[] {
-  const groups = new Map<string, { total: number; count: number }>();
-  for (const row of rows) {
-    const name = String(row[key] ?? "Unknown");
-    const current = groups.get(name) ?? { total: 0, count: 0 };
-    current.total += row.probability;
-    current.count += 1;
-    groups.set(name, current);
-  }
-
-  return Array.from(groups.entries())
-    .map(([name, item]) => ({ name, value: item.total / item.count, count: item.count }))
-    .sort((a, b) => b.value - a.value);
 }
