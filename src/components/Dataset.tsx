@@ -22,6 +22,67 @@ const STATUS_TONE: Record<UiCustomer["status"], PillTone> = {
   Healthy: "good",
 };
 
+const EXPORT_HEADERS = [
+  "account",
+  "username",
+  "full_name",
+  "plan",
+  "region",
+  "fiber_signal_dbm",
+  "late_payments_6m",
+  "outages_30d",
+  "tenure_months",
+  "support_tickets_30d",
+  "autopay",
+  "monthly_revenue_inr",
+  "risk_probability",
+  "risk_band",
+  "status",
+];
+
+function csvEscape(value: string | number): string {
+  const str = String(value ?? "");
+  if (/[",\n]/.test(str)) return `"${str.replace(/"/g, '""')}"`;
+  return str;
+}
+
+function downloadCsv(rows: UiCustomer[], filename: string): void {
+  const lines = [EXPORT_HEADERS.join(",")];
+  for (const c of rows) {
+    const { label: bandLabel } = riskTier(c.risk);
+    lines.push(
+      [
+        c.acct,
+        c.username,
+        c.fullName,
+        c.plan,
+        c.region,
+        c.fiberSignal,
+        c.latePayments,
+        c.recentOutages,
+        c.monthsWithIsp,
+        c.ticketsRaised,
+        c.autopay ? 1 : 0,
+        c.arpu,
+        c.risk.toFixed(4),
+        bandLabel,
+        c.status,
+      ]
+        .map(csvEscape)
+        .join(","),
+    );
+  }
+  const blob = new Blob([lines.join("\n")], { type: "text/csv;charset=utf-8" });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement("a");
+  a.href = url;
+  a.download = filename;
+  document.body.appendChild(a);
+  a.click();
+  a.remove();
+  URL.revokeObjectURL(url);
+}
+
 export function DatasetSection({
   datasets,
   datasetKey,
@@ -99,6 +160,12 @@ export function DatasetSection({
         ? { key, dir: s.dir === "asc" ? "desc" : "asc" }
         : { key, dir: "desc" },
     );
+  }
+
+  function onExport() {
+    const fileSuffix = datasetKey.replace(/[^a-z0-9]+/gi, "-");
+    const stamp = new Date().toISOString().slice(0, 10);
+    downloadCsv(filtered, `netintel-${fileSuffix}-${stamp}.csv`);
   }
 
   const activeAcct = pinned ?? hovered;
@@ -184,6 +251,19 @@ export function DatasetSection({
             onChange={(event) => setQuery(event.target.value)}
           />
         </div>
+        <button
+          type="button"
+          className="export-btn"
+          onClick={onExport}
+          disabled={filtered.length === 0}
+          title="Download these rows as CSV"
+        >
+          <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.4">
+            <path d="M8 2v8M5 7l3 3 3-3" strokeLinecap="round" strokeLinejoin="round" />
+            <path d="M3 12v1.5A1.5 1.5 0 0 0 4.5 15h7a1.5 1.5 0 0 0 1.5-1.5V12" strokeLinecap="round" />
+          </svg>
+          Export
+        </button>
       </div>
 
       <div className="filter-row">
