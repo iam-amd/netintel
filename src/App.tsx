@@ -112,18 +112,20 @@ export default function App() {
     <div className="app">
       <TopBar />
       <main className="page">
-        <Hero />
+        <section className="first-screen">
+          <Hero />
 
-        <div
-          className="reveal reveal-sim"
-          style={{ "--d": "1600ms" } as CSSProperties}
-        >
-          <SimulatorPanel
-            profile={profile}
-            setProfile={setProfile}
-            probability={simulatorProbability}
-          />
-        </div>
+          <div
+            className="reveal reveal-sim"
+            style={{ "--d": "1600ms" } as CSSProperties}
+          >
+            <SimulatorPanel
+              profile={profile}
+              setProfile={setProfile}
+              probability={simulatorProbability}
+            />
+          </div>
+        </section>
 
         <div
           className="reveal reveal-data"
