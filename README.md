@@ -1,5 +1,10 @@
 # NetIntel
 
+![NetIntel — live demo](docs/dashboard.gif)
+
+> **Live demo:** https://netintel-amd.vercel.app/ · **Code:** https://github.com/iam-amd/netintel
+
+
 NetIntel is a small ISP customer-retention tool. It helps an operator find
 customers who may need attention before they disconnect or move to another
 provider.
@@ -29,6 +34,12 @@ earlier:
 - follow up on late payments
 - prioritize support work
 - review customer lists instead of guessing
+
+## Live risk scoring
+
+![Risk gauge updating live as the operator changes a customer's signals](docs/animation.gif)
+
+Drag any slider — fiber strength, late payments, outages, tenure, support load — and the risk gauge, top contributors, and suggested next step update in real time. The model is scored entirely in the browser. No requests, no backend, no customer data leaves the page.
 
 ## What The App Does
 
